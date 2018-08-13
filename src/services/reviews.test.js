@@ -30,7 +30,12 @@ jest.mock('../libs/database', () => {
         },
     ];
     return {
-        getModel: jest.fn().mockReturnValue({
+        startSession: jest.fn().mockResolvedValue({
+            startTransaction: jest.fn().mockResolvedValue(),
+            commitTransaction: jest.fn().mockResolvedValue(),
+            endSession: jest.fn().mockResolvedValue(),
+        }),
+        model: jest.fn().mockReturnValue({
             find: jest.fn().mockResolvedValue(reviews),
             findOne: jest.fn().mockResolvedValue(reviews[0]),
             findById: jest.fn().mockResolvedValue(reviews[0]),
@@ -41,6 +46,29 @@ jest.mock('../libs/database', () => {
         }),
     };
 });
+
+const ratings = [
+    {
+        _id: '5b7123a6a290d06adb8f9cb5',
+        productId: '1003',
+        __v: 0,
+        count: 5,
+        rating: 20,
+    },
+    {
+        _id: '5b7123a6a290d06adb8f9cb5',
+        productId: '1010',
+        __v: 0,
+        count: 6,
+        rating: 25,
+    },
+];
+
+const ratingsServiceMock = {
+    getRatings: jest.fn().mockResolvedValue(ratings[0]),
+    updateRating: jest.fn().mockResolvedValue(ratings[1]),
+    deleteRating: jest.fn().mockResolvedValue(ratings[1]),
+};
 
 test('should retrieve reviews', async () => {
     const filters = {
@@ -59,8 +87,10 @@ test('should add review', async () => {
         rating: 5,
         review: 'awesome',
     };
-    const review = await reviewsService.postReview({ review: reviewToAdd });
     logger.log.mockReturnValue();
+    const review = await reviewsService.postReview({
+        review: reviewToAdd, ratingsService: ratingsServiceMock,
+    });
     expect(logger.log).toBeCalled();
     expect(review.rating).toBe(5);
 });
@@ -75,19 +105,27 @@ test('should get review by id', async () => {
 
 test('should delete review by id', async () => {
     const id = '5b708fe2c1f830022ec61633';
-    const review = await reviewsService.deleteReviewById({ id });
+    const review = await reviewsService.deleteReviewById({
+        id, ratingsService: ratingsServiceMock,
+    });
     logger.log.mockReturnValue();
     expect(logger.log).toBeCalled();
-    expect(review.review).toBe('great');
+    expect(review.review).toBe('awesome');
 });
 
 test('should update review by id', async () => {
     const id = '5b708fe2c1f830022ec61633';
+    const prevReview = {
+        rating: 4,
+        review: 'good',
+    };
     const update = {
         rating: 5,
         review: 'great',
     };
-    const review = await reviewsService.updateReviewById({ id, review: update });
+    const review = await reviewsService.updateReviewById({
+        id, review: update, prevReview, ratingsService: ratingsServiceMock,
+    });
     logger.log.mockReturnValue();
     expect(logger.log).toBeCalled();
     expect(review.review).toBe('great');

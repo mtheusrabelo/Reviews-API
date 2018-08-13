@@ -4,7 +4,8 @@ import logger from '../libs/logger';
 export const getReviews = async (ctx) => {
     try {
         const filters = ctx.query;
-        const reviews = await ctx.state.reviewsService.getReviews({ filters });
+        const { reviewsService } = ctx.state;
+        const reviews = await reviewsService.getReviews({ filters });
         ctx.body = reviews;
         if (reviews) {
             ctx.status = status.OK;
@@ -19,10 +20,11 @@ export const getReviews = async (ctx) => {
 
 export const postReview = async (ctx) => {
     try {
-        await ctx.state.ratingsService
-            .updateRating({ review: ctx.request.body });
-        const review = await ctx.state.reviewsService
-            .postReview({ review: ctx.request.body });
+        const { ratingsService, reviewsService } = ctx.state;
+        const review = await reviewsService.postReview({
+            review: ctx.request.body,
+            ratingsService,
+        });
         // eslint-disable-next-line
         ctx.set({ Location: `/reviews/${review._id}` });
         ctx.status = status.CREATED;
@@ -36,7 +38,8 @@ export const postReview = async (ctx) => {
 export const getReviewById = async (ctx) => {
     try {
         const { id } = ctx.params;
-        const review = await ctx.state.reviewsService.getReviewById({ id });
+        const { ratingsService, reviewsService } = ctx.state;
+        const review = await reviewsService.getReviewById({ id, ratingsService });
         ctx.body = review;
         if (review) {
             ctx.status = status.OK;
@@ -52,10 +55,10 @@ export const getReviewById = async (ctx) => {
 export const deleteReviewById = async (ctx) => {
     try {
         const { id } = ctx.params;
-        const review = await ctx.state.reviewsService.getReviewById({ id });
+        const { ratingsService, reviewsService } = ctx.state;
+        const review = await reviewsService.getReviewById({ id });
         if (review) {
-            await ctx.state.ratingsService.deleteRating({ review });
-            await ctx.state.reviewsService.deleteReviewById({ id });
+            await reviewsService.deleteReviewById({ id, ratingsService });
             ctx.status = status.NO_CONTENT;
             return;
         }
@@ -70,20 +73,11 @@ export const updateReviewById = async (ctx) => {
     try {
         const { id } = ctx.params;
         const review = ctx.request.body;
-        const prevReview = await ctx.state.reviewsService.getReviewById({ id });
-        if (!prevReview) {
-            ctx.status = status.NOT_FOUND;
-            return;
-        }
-        const { productId, rating } = prevReview;
-        await ctx.state.ratingsService.updateRating({
-            review: {
-                productId,
-                rating: review.rating - rating,
-            },
-            count: 0,
+        const { ratingsService, reviewsService } = ctx.state;
+        const prevReview = await reviewsService.getReviewById({ id });
+        await ctx.state.reviewsService.updateReviewById({
+            id, review, prevReview, ratingsService,
         });
-        await ctx.state.reviewsService.updateReviewById({ id, review });
         ctx.status = status.NO_CONTENT;
         ctx.set({ Location: `/reviews/${id}` });
     } catch (err) {

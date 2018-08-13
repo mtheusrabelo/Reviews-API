@@ -1,8 +1,8 @@
 import logger from '../libs/logger';
-import { getModel } from '../libs/database';
+import mongoose from '../libs/database';
 import { mongoSchema } from '../schemas/rating';
 
-const Rating = getModel({ name: 'Rating', schema: mongoSchema });
+const Rating = mongoose.model('Rating', mongoSchema);
 
 export const getRatings = async ({ filters }) => {
     try {
@@ -15,7 +15,7 @@ export const getRatings = async ({ filters }) => {
     }
 };
 
-export const updateRating = async ({ review, count = 1 }) => {
+export const updateRating = async ({ review, count = 1, session }) => {
     try {
         logger.log('update rating service', review);
         const { productId, rating } = review;
@@ -24,14 +24,14 @@ export const updateRating = async ({ review, count = 1 }) => {
                 rating,
                 count,
             },
-        }, { upsert: true });
+        }, { upsert: true, session });
     } catch (err) {
         logger.log('error while updating rating', err);
         throw new Error('update rating error');
     }
 };
 
-export const deleteRating = async ({ review }) => {
+export const deleteRating = async ({ review, session }) => {
     try {
         logger.log('delete rating service', review);
         const { productId, rating } = review;
@@ -40,7 +40,7 @@ export const deleteRating = async ({ review }) => {
                 rating: -rating,
                 count: -1,
             },
-        });
+        }, { session });
     } catch (err) {
         logger.log('error while deleting rating', err);
         throw new Error('delete rating error');

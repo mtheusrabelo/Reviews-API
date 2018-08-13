@@ -1,8 +1,8 @@
 import logger from '../libs/logger';
-import { getModel } from '../libs/database';
+import mongoose from '../libs/database';
 import { mongoSchema } from '../schemas/review';
 
-const Review = getModel({ name: 'Review', schema: mongoSchema });
+const Review = mongoose.model('Review', mongoSchema);
 
 export const getReviews = async ({ filters }) => {
     try {
@@ -18,10 +18,16 @@ export const getReviews = async ({ filters }) => {
     }
 };
 
-export const postReview = async ({ review }) => {
+export const postReview = async ({ review, ratingsService }) => {
     try {
         logger.log('post review service', review);
-        return await Review.create(review);
+        const session = await mongoose.startSession();
+        await session.startTransaction();
+        const addedReview = await Review.create([review], { session });
+        await ratingsService.updateRating({ review, session });
+        await session.commitTransaction();
+        await session.endSession();
+        return addedReview;
     } catch (err) {
         logger.log('error while creating review', err);
         throw new Error('create review error');
@@ -38,20 +44,42 @@ export const getReviewById = async ({ id }) => {
     }
 };
 
-export const deleteReviewById = async ({ id }) => {
+export const deleteReviewById = async ({ id, ratingsService }) => {
     try {
         logger.log('delete review by id', id);
-        return await Review.findByIdAndRemove(id);
+        const session = await mongoose.startSession();
+        await session.startTransaction();
+        const review = await Review.findById(id);
+        await Review.findByIdAndRemove(id, { session });
+        await ratingsService.deleteRating({ review, session });
+        await session.commitTransaction();
+        await session.endSession();
+        return review;
     } catch (err) {
         logger.log('error while deleting review by id', err);
         throw new Error('delete review by id error');
     }
 };
 
-export const updateReviewById = async ({ id, review }) => {
+export const updateReviewById = async ({
+    id, review, ratingsService, prevReview,
+}) => {
     try {
         logger.log('update review by id service', id, review);
-        return await Review.findByIdAndUpdate(id, review);
+        const session = await mongoose.startSession();
+        await session.startTransaction();
+        const { productId, rating } = prevReview;
+        const updatedReview = await Review.findByIdAndUpdate(id, review, { session });
+        await ratingsService.updateRating({
+            review: {
+                productId,
+                rating: review.rating - rating,
+            },
+            count: 0,
+        }, { session });
+        await session.commitTransaction();
+        await session.endSession();
+        return updatedReview;
     } catch (err) {
         logger.log('error while updating review by id', err);
         throw new Error('update review by id error');

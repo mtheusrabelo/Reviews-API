@@ -20,7 +20,7 @@ jest.mock('../libs/database', () => {
         },
     ];
     return {
-        getModel: jest.fn().mockReturnValue({
+        model: jest.fn().mockReturnValue({
             find: jest.fn().mockResolvedValue(ratings[0]),
             findOne: jest.fn().mockResolvedValue(ratings[0]),
             findById: jest.fn().mockResolvedValue(ratings[0]),
