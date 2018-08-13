@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  reviews-api:
+    build:
+      context: ./
+    ports:
+      - 8888:8888
+      - 10888:10888
+    volumes:
+      - .:/app
+    depends_on:
+      - mongodb
+      - redis
+    environment:
+      - NODE_ENV=development
+  mongodb:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
