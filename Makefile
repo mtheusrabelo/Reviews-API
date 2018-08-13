@@ -14,7 +14,7 @@ dc-reviews-build:
 	docker-compose up --build reviews-api
 
 dc-mongo:
-	docker-compose up mongodb
+	docker-compose up mongodb-setup
 
 dc-redis:
 	docker-compose up redis

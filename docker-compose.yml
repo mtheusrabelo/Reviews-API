@@ -10,14 +10,45 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - mongodb
+      - mongodb-setup
       - redis
     environment:
       - NODE_ENV=development
+  mongodb-setup:
+    image: mongo:latest
+    volumes:
+    - ./entrypoint_mongo.js:/app/entrypoint_mongo.js
+    - ./entrypoint_mongo.sh:/app/entrypoint_mongo.sh
+    entrypoint: [ "sh", "/app/entrypoint_mongo.sh" ]
+    depends_on:
+      - mongodb
+      - mongodb2
+      - mongodb3
   mongodb:
     image: mongo:latest
+    volumes:
+    - ./mongo_data/rs0:/data
     ports:
       - 27017:27017
+    command: mongod --replSet reviewsSet --smallfiles
+  mongodb2:
+    image: mongo:latest
+    volumes:
+    - ./mongo_data/rs1:/data
+    ports:
+      - 27018:27017
+    command: mongod --replSet reviewsSet --smallfiles
+    depends_on:
+      - mongodb
+  mongodb3:
+    image: mongo:latest
+    volumes:
+    - ./mongo_data/rs3:/data
+    ports:
+      - 27019:27017
+    command: mongod --replSet reviewsSet --smallfiles
+    depends_on:
+      - mongodb2
   redis:
     image: redis:latest
     ports:

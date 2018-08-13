@@ -1,4 +1,5 @@
 node_modules/
+mongo_data/
 dist/
 docs.html
 *.log
