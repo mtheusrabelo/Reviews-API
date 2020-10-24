@@ -1,7 +1,6 @@
 node_modules/
-mongo_data/
-dist/
-docs.html
+postgres_data/
+coverage/
 *.log
 .env
 .envs
