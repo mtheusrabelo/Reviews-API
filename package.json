@@ -6,8 +6,8 @@
   "scripts": {
     "start": "nodemon src/server.js",
     "debug": "nodemon --inspect=0.0.0.0:10888 src/server.js",
-    "test": "jest --passWithNoTests",
-    "coverage": "jest --coverage",
+    "test": "jest tests/**/*.test.js",
+    "coverage": "jest tests/**/*.test.js --coverage",
     "coverage:open": "npm run coverage && google-chrome coverage/lcov-report/index.html",
     "lint": "eslint src/**/*.js"
   },
