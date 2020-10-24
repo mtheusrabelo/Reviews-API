@@ -1,55 +1,32 @@
-version: '3'
+version: '3.4'
 
 services:
   reviews-api:
     build:
       context: ./
+      target: development
     ports:
       - 8888:8888
       - 10888:10888
     volumes:
       - .:/app
     depends_on:
-      - mongodb-setup
+      - postgres
       - redis
     environment:
       - NODE_ENV=development
-  mongodb-setup:
-    image: mongo:latest
+  postgres:
+    image: postgres:13.0-alpine
     volumes:
-    - ./entrypoint_mongo.js:/app/entrypoint_mongo.js
-    - ./entrypoint_mongo.sh:/app/entrypoint_mongo.sh
-    entrypoint: [ "sh", "/app/entrypoint_mongo.sh" ]
-    depends_on:
-      - mongodb
-      - mongodb2
-      - mongodb3
-  mongodb:
-    image: mongo:latest
-    volumes:
-    - ./mongo_data/rs0:/data
+    - ./database_data:/var/lib/postgresql/data
+    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - 27017:27017
-    command: mongod --replSet reviewsSet --smallfiles
-  mongodb2:
-    image: mongo:latest
-    volumes:
-    - ./mongo_data/rs1:/data
-    ports:
-      - 27018:27017
-    command: mongod --replSet reviewsSet --smallfiles
-    depends_on:
-      - mongodb
-  mongodb3:
-    image: mongo:latest
-    volumes:
-    - ./mongo_data/rs3:/data
-    ports:
-      - 27019:27017
-    command: mongod --replSet reviewsSet --smallfiles
-    depends_on:
-      - mongodb2
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=user
+      - POSTGRES_DB=reviews
   redis:
-    image: redis:latest
+    image: redis:6.0.8-alpine
     ports:
       - 6379:6379
