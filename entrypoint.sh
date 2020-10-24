@@ -1,13 +1,14 @@
+#!/bin/bash
+
 if [ ! -d node_modules ]; then
     echo "Installing dependencies"
-    npm install --silent
+    yarn install
 fi
 
-if [ "${NODE_ENV}" == "development" ]; then
-    echo "Running in debug mode"
-    npm run debug
-else
+if [ "${NODE_ENV}" == "production" ]; then
     echo "Running in production mode"
-    npm run build
-    npm run server
+    yarn run start
+else
+    echo "Running in debug mode"
+    yarn run debug
 fi
