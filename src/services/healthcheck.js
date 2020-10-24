@@ -13,6 +13,8 @@ const isReady = ({ database, cache }) => async () => {
     if (!cachedNow) {
         throw new Error('Cache not available or too slow');
     }
+
+    return true;
 };
 
 module.exports = (args) => ({
