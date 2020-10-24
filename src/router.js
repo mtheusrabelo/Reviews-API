@@ -1,57 +1,28 @@
-import koaRouter from 'koa-router';
+const Router = require('koa-router');
+const { container } = require('./injector');
+const {
+  getReviewsRequest,
+  postReviewsRequest,
+  getReviewRequest,
+  putReviewRequest,
+  deleteReviewRequest
+} = require('./schemas/reviews');
 
-import validate from './middlewares/validate';
-import cache from './middlewares/cache';
-import * as ratingsSchema from './schemas/rating';
-import * as reviewsSchema from './schemas/review';
-import * as healthcheckHandler from './controllers/healthcheck';
-import * as reviewsHandler from './controllers/reviews';
-import * as ratingsHandler from './controllers/ratings';
+const router = new Router();
 
-const router = koaRouter();
+const healthcheckController = container.resolve('healthcheckController');
+const reviewsController = container.resolve('reviewsController');
+const validator = container.resolve('validatorMiddleware');
 
-router.get(
-    '/healthcheck',
-    healthcheckHandler.getHealthcheck,
-);
+// health
+router.get('/liveness', healthcheckController.getLiveness);
+router.get('/readiness', healthcheckController.getReadiness);
 
-router.get(
-    '/ratings',
-    cache,
-    validate({ schema: ratingsSchema.getRatings }),
-    ratingsHandler.getRatings,
-);
+// v1
+router.get('/v1/reviews', validator(getReviewsRequest), reviewsController.getAll);
+router.post('/v1/reviews', validator(postReviewsRequest), reviewsController.post);
+router.get('/v1/reviews/:id', validator(getReviewRequest), reviewsController.get);
+router.put('/v1/reviews/:id', validator(putReviewRequest), reviewsController.put);
+router.delete('/v1/reviews/:id', validator(deleteReviewRequest), reviewsController.remove);
 
-router.get(
-    '/reviews',
-    cache,
-    validate({ schema: reviewsSchema.getReviews }),
-    reviewsHandler.getReviews,
-);
-
-router.post(
-    '/reviews',
-    validate({ schema: reviewsSchema.postReview }),
-    reviewsHandler.postReview,
-);
-
-router.get(
-    '/reviews/:id',
-    cache,
-    validate({ schema: reviewsSchema.getReviewById }),
-    reviewsHandler.getReviewById,
-);
-
-router.patch(
-    '/reviews/:id',
-    validate({ schema: reviewsSchema.updateReviewById }),
-    reviewsHandler.updateReviewById,
-);
-
-router.delete(
-    '/reviews/:id',
-    validate({ schema: reviewsSchema.deleteReviewById }),
-    reviewsHandler.deleteReviewById,
-);
-
-export default router;
+module.exports = router;
