@@ -1,20 +1,25 @@
 # Reviews API
 
-## [API Documentation](https://reviews7.docs.apiary.io)
+## Description
+Modern production-ready open-source reviews API
 
-## Features
-- Modern JavaScript
-- Dockerized
-- Debugging support
-- Cache layer
-- API Documentation
-- Optimized ratings service
-- Open-source
+## Requirements
+Docker 17.05 or higher
+Docker-compose 1.0 or higher
+
+## How to install
+Please run the following command:
+```
+$ make build-dev
+```
 
 ## Usage
+Run the following command;
 ```
-$ docker-compose up
+$ make run-dev
 ```
+
+You should be able to make requests to localhost:8888
 
 ## License
 MIT
