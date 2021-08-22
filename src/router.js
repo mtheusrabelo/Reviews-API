@@ -1,4 +1,5 @@
 const Router = require('koa-router');
+const graphqlHTTP = require('koa-graphql');
 const { container } = require('./injector');
 const {
   getReviewsRequest,
@@ -10,6 +11,7 @@ const {
 
 const router = new Router();
 
+const graphQL = container.resolve('graphQL');
 const healthcheckController = container.resolve('healthcheckController');
 const reviewsController = container.resolve('reviewsController');
 const validator = container.resolve('validatorMiddleware');
@@ -17,6 +19,20 @@ const validator = container.resolve('validatorMiddleware');
 // health
 router.get('/liveness', healthcheckController.getLiveness);
 router.get('/readiness', healthcheckController.getReadiness);
+
+// graphql
+router.all('/graphql', graphqlHTTP({
+    schema: graphQL.schema,
+    rootValue: graphQL.rootResolver,
+    graphiql: false
+}));
+
+router.all('/graphiql', graphqlHTTP({
+    schema: graphQL.schema,
+    rootValue: graphQL.rootResolver,
+    pretty: true,
+    graphiql: true
+}));
 
 // v1
 router.get('/v1/reviews', validator(getReviewsRequest), reviewsController.getAll);

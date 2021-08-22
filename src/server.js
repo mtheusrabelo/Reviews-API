@@ -11,8 +11,8 @@ const config = container.resolve('config');
 const app = new Koa();
 
 app
-  .use(helmet())
-  .use(bodyParser({ enableTypes: ['json'] }))
-  .use(router.routes());
+    .use(bodyParser({ enableTypes: ['json'] }))
+    .use(router.routes())
+    .use(router.allowedMethods());
 
 app.listen(config.port, () => console.log(`Listening on ${config.port}`));

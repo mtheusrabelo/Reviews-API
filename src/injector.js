@@ -1,6 +1,9 @@
 const awilix = require('awilix');
 const { Lifetime } = require('awilix');
 
+// graphQL
+const graphQL = require('./graphql');
+
 // controllers
 const healthcheckController = require('./controllers/healthcheck');
 const reviewsController = require('./controllers/reviews');
@@ -27,6 +30,9 @@ const container = awilix.createContainer({
 
 const setup = () => {
     container.register({
+        // graphQL
+        graphQL: awilix.asFunction(graphQL, { lifetime: Lifetime.SINGLETON }),
+
         // controllers
         healthcheckController: awilix.asFunction(healthcheckController, { lifetime: Lifetime.SINGLETON }),
         reviewsController: awilix.asFunction(reviewsController, { lifetime: Lifetime.SINGLETON }),
