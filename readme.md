@@ -14,6 +14,11 @@ $ make build-dev
 ```
 
 ## Usage
+Please copy .env.example to .env
+``` 
+$ cp .env.example .env
+```
+
 Run the following command;
 ```
 $ make run-dev
