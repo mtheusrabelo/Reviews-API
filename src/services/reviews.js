@@ -21,7 +21,7 @@ const getById = ({ models }) => async ({ id }) => {
         return toReview(review);
     }
 
-    return false;
+    return undefined;
 };
 
 const add = ({ models }) => async ({ productId, rating, comment }) => {
@@ -53,9 +53,9 @@ const update = ({ models }) => async (
 const remove = ({ models }) => async ({ id }) => {
     const { Review } = models;
 
-    const result = await Review.destroy({ returning: true, where: { id } });
+    const review = await Review.destroy({ returning: true, where: { id } });
 
-    return result.length > 0;
+    return toReview(review);
 };
 
 module.exports = (args) => ({
