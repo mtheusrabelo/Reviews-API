@@ -20,14 +20,16 @@ const toReview = ({
     updatedat,
     deletedat,
     rating,
-    comment
+    comment,
+    id
 }) => ({
     productId: productid,
     createdAt: createdat,
     updatedAt: updatedat,
     deletedAt: deletedat,
     comment,
-    rating
+    rating,
+    id
 });
 
 module.exports = {
