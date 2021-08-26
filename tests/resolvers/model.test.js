@@ -11,10 +11,12 @@ const to = {
     comment: 'comment',
     createdAt,
     updatedAt,
-    deletedAt
+    deletedAt,
+    id: 4
 };
 
 const from = {
+    id: 4,
     productid: 2,
     rating: 5,
     comment: 'comment',

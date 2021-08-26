@@ -4,14 +4,16 @@ const fromReview = ({
     updatedAt,
     deletedAt,
     rating,
-    comment
+    comment,
+    id
 }) => ({
     productid: productId,
     createdat: createdAt,
     updatedat: updatedAt,
     deletedat: deletedAt,
     comment,
-    rating
+    rating,
+    id
 });
 
 const toReview = ({

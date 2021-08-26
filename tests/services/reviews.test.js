@@ -11,10 +11,12 @@ const toReview = {
     comment: 'comment',
     createdAt,
     updatedAt,
-    deletedAt
+    deletedAt,
+    id: 4
 };
 
 const fromReview = {
+    id: 4,
     productid: 2,
     rating: 5,
     comment: 'comment',
@@ -77,5 +79,5 @@ test('should be able to remove a review', async () => {
 
     const result = await reviews.remove({ id: 3 });
 
-    expect(result).toBe(true);
+    expect(result).toBe(undefined);
 });
