@@ -1,7 +1,9 @@
 # Reviews API
 
 ## Description
-Modern production-ready open-source REST + GRAPHQL reviews API
+Modern production-ready open-source REST + GraphQL reviews API
+
+![](screencast.gif)
 
 ## Requirements
 Docker 17.05 or higher
