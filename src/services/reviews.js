@@ -47,15 +47,15 @@ const update = ({ models }) => async (
 
     const [review] = updates[1];
 
-    return toReview(review);
+    return toReview({ id, ...review });
 };
 
 const remove = ({ models }) => async ({ id }) => {
     const { Review } = models;
 
-    const review = await Review.destroy({ returning: true, where: { id } });
+    await Review.destroy({ returning: true, where: { id } });
 
-    return toReview(review);
+    return undefined;
 };
 
 module.exports = (args) => ({
