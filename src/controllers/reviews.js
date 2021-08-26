@@ -2,7 +2,8 @@ const status = require('http-status');
 
 const getAll = ({ reviewsService }) => async (ctx) => {
     const { page, pageSize } = ctx.request.query;
-    const { data, pagination } = await reviewsService.getAll({ page, pageSize });
+    const { data, pagination } = await reviewsService
+        .getAll({ page, pageSize, showPagination: true });
 
     ctx.status = status.OK;
     ctx.body = {

@@ -1,15 +1,18 @@
 const { fromReview, toReview } = require('../resolvers/model');
 const { getLimitAndOffset, mountPagination } = require('../utils/pagination');
 
-const getAll = ({ models }) => async ({ page, pageSize }) => {
+const getAll = ({ models }) => async ({ page, pageSize, showPagination }) => {
     const { Review } = models;
     const { limit, offset } = getLimitAndOffset({ page, pageSize });
     const { count, rows } = await Review.findAndCountAll({ limit, offset });
 
     const data = rows.map(toReview);
-    const pagination = mountPagination({ page, pageSize, count });
+    if (showPagination) {
+        const pagination = mountPagination({ page, pageSize, count });
+        return { data, pagination };
+    }
 
-    return { data, pagination };
+    return data;
 };
 
 const getById = ({ models }) => async ({ id }) => {

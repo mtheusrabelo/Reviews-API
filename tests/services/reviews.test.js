@@ -38,7 +38,7 @@ const models = {
 test('should be able get reviews with pagination', async () => {
     const reviews = reviewsService({ models });
 
-    const result = await reviews.getAll({ page: 3, pageSize: 4 });
+    const result = await reviews.getAll({ page: 3, pageSize: 4, showPagination: true });
 
     expect(result).toStrictEqual({ data: [toReview],
         pagination: {

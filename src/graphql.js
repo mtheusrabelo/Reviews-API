@@ -3,25 +3,13 @@ const { buildSchema } = require('graphql');
 const schema = buildSchema(`
    type Query {
     review(id: Int!): Review 
-    reviews(page: Int!, pageSize: Int!): Reviews
+    reviews(page: Int!, pageSize: Int!): [Review]
   }
 
   type Mutation {
     createReview(productId: Int!, rating: Int!, comment: String!): Review,
     updateReview(id: Int!, productId: Int!, rating: Int!, comment: String!): Review
     deleteReview(id: Int!): Review
-  }
-
-  type Reviews {
-    data: [Review]
-    pagination: Pagination!
-  }
-
-  type Pagination {
-    page: Int!,
-    pageSize: Int!,
-    count: Int!,
-    totalPages: Int!
   }
 
   type Review {
