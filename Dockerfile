@@ -1,4 +1,4 @@
-FROM node:12.18.2-slim AS base
+FROM node:18.13.0-slim AS base
     ENV APPDIR /app
     EXPOSE $PORT
     WORKDIR $APPDIR
