@@ -30,6 +30,3 @@ You should be able to make requests to localhost:8888
 
 ## License
 MIT
-
-## Author
-Matheus Freire Rabelo
