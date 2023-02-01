@@ -25,7 +25,7 @@
     "ratings",
     "comments"
   ],
-  "author": "Matheus Freire Rabelo",
+  "author": "Matheus Rabelo",
   "license": "MIT",
   "dependencies": {
     "awilix": "^4.2.7",
